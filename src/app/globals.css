@@ -1,0 +1,62 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+:root {
+  --ink: #1c1930;
+  --indigo: #4f3cc9;
+  --indigo-deep: #372a8f;
+  --parchment: #f3f1f8;
+  --parchment-warm: #ebe7f3;
+  --clay: #b5652d;
+  --clay-deep: #93511f;
+  --clay-light: #dba871;
+  --whatsapp: #4a9b5e;
+  --whatsapp-deep: #3c8050;
+  --line: #dcd6e8;
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-indigo: var(--indigo);
+  --color-indigo-deep: var(--indigo-deep);
+  --color-parchment: var(--parchment);
+  --color-parchment-warm: var(--parchment-warm);
+  --color-clay: var(--clay);
+  --color-clay-deep: var(--clay-deep);
+  --color-clay-light: var(--clay-light);
+  --color-whatsapp: var(--whatsapp);
+  --color-whatsapp-deep: var(--whatsapp-deep);
+  --color-line: var(--line);
+
+  --font-serif: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-plex-mono);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from { height: 0; }
+    to { height: var(--radix-accordion-content-height); }
+  }
+  @keyframes accordion-up {
+    from { height: var(--radix-accordion-content-height); }
+    to { height: 0; }
+  }
+}
+
+body {
+  background: var(--parchment);
+  color: var(--ink);
+  font-family: var(--font-inter), sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* recurring signature motif: survey coordinate label */
+.coord-label {
+  font-family: var(--font-plex-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--indigo);
+  opacity: 0.85;
+}
