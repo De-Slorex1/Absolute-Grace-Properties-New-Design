@@ -6,24 +6,22 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { WhatsAppIcon } from "@/components/whatsapp-icon";
+import { SuccessDialog } from "@/components/success-dialog";
 import { waLink, type Development } from "@/lib/data";
-import { X, Clock, ShieldCheck } from "lucide-react";
+import { X, Clock, ShieldCheck, Loader2 } from "lucide-react";
 
 export function ContactCard({ dev }: { dev: Development }) {
   const [mobileOpen, setMobileOpen] = useState(false);
-
   const waMessage = `Hi, I'm interested in ${dev.name} (${dev.location}). Could you share more details?`;
 
   return (
     <>
-      {/* Desktop / tablet sticky sidebar card */}
       <div className="hidden lg:block">
         <div className="sticky top-[104px] rounded-sm border border-line bg-white p-7">
           <CardBody dev={dev} waMessage={waMessage} />
         </div>
       </div>
 
-      {/* Mobile: fixed bottom bar that expands into a sheet */}
       <div className="fixed inset-x-0 bottom-0 z-50 border-t border-line bg-white p-4 lg:hidden">
         <div className="flex items-center justify-between gap-3">
           <div>
@@ -44,10 +42,7 @@ export function ContactCard({ dev }: { dev: Development }) {
 
       {mobileOpen && (
         <div className="fixed inset-0 z-[100] flex items-end lg:hidden">
-          <div
-            className="absolute inset-0 bg-ink/60"
-            onClick={() => setMobileOpen(false)}
-          />
+          <div className="absolute inset-0 bg-ink/60" onClick={() => setMobileOpen(false)} />
           <div className="relative max-h-[85vh] w-full overflow-y-auto rounded-t-lg bg-white p-6 pb-8">
             <button
               onClick={() => setMobileOpen(false)}
@@ -65,8 +60,50 @@ export function ContactCard({ dev }: { dev: Development }) {
 }
 
 function CardBody({ dev, waMessage }: { dev: Development; waMessage: string }) {
-  function handleSubmit(e: React.FormEvent) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState(waMessage);
+
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError(null);
+    setSubmitting(true);
+
+    try {
+      const res = await fetch("/api/property-inquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email,
+          phone,
+          message,
+          developmentName: dev.name,
+          developmentSlug: dev.slug,
+        }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error ?? "Something went wrong. Please try again.");
+        return;
+      }
+
+      setSuccess(true);
+      setName("");
+      setEmail("");
+      setPhone("");
+      setMessage(waMessage);
+    } catch {
+      setError("Network error — please check your connection and try again.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -101,27 +138,55 @@ function CardBody({ dev, waMessage }: { dev: Development; waMessage: string }) {
       </div>
 
       <form onSubmit={handleSubmit} className="border-t border-line pt-6">
-        <p className="mb-4 text-[13px] font-medium text-ink/70">
-          Or send a quick inquiry
-        </p>
+        <p className="mb-4 text-[13px] font-medium text-ink/70">Or send a quick inquiry</p>
         <div className="mb-3">
           <Label htmlFor="cc-name">Name</Label>
-          <Input id="cc-name" placeholder="Your name" required />
+          <Input id="cc-name" placeholder="Your name" required value={name} onChange={(e) => setName(e.target.value)} />
         </div>
         <div className="mb-3">
           <Label htmlFor="cc-email">Email</Label>
-          <Input id="cc-email" type="email" placeholder="you@email.com" required />
+          <Input
+            id="cc-email"
+            type="email"
+            placeholder="you@email.com"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
         </div>
         <div className="mb-3">
           <Label htmlFor="cc-phone">Phone</Label>
-          <Input id="cc-phone" type="tel" placeholder="+234 800 000 0000" />
+          <Input
+            id="cc-phone"
+            type="tel"
+            placeholder="+234 800 000 0000"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+          />
         </div>
         <div className="mb-4">
           <Label htmlFor="cc-message">Message</Label>
-          <Textarea id="cc-message" defaultValue={waMessage} />
+          <Textarea
+            id="cc-message"
+            value={message}
+            required
+            onChange={(e) => setMessage(e.target.value)}
+          />
         </div>
-        <Button type="submit" className="w-full">
-          Schedule a Viewing
+
+        {error && (
+          <p className="mb-3 rounded-sm bg-red-50 px-3.5 py-2.5 text-[13px] text-red-700">{error}</p>
+        )}
+
+        <Button type="submit" className="w-full" disabled={submitting}>
+          {submitting ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Sending...
+            </>
+          ) : (
+            "Schedule a Viewing"
+          )}
         </Button>
       </form>
 
@@ -129,6 +194,13 @@ function CardBody({ dev, waMessage }: { dev: Development; waMessage: string }) {
         <Clock className="h-3.5 w-3.5 text-clay" />
         Response within 24 hours
       </div>
+
+      <SuccessDialog
+        open={success}
+        onClose={() => setSuccess(false)}
+        title="Inquiry sent"
+        message="Thanks — we've received your inquiry and will get back to you within 24 hours."
+      />
     </>
   );
 }

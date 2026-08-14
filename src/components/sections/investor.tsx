@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,12 +12,59 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SuccessDialog } from "@/components/success-dialog";
 import { developments, waLink } from "@/lib/data";
+import { Loader2 } from "lucide-react";
 
 export function Investor() {
-  function handleSubmit(e: React.FormEvent) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [capacity, setCapacity] = useState("");
+  const [development, setDevelopment] = useState("");
+  const [message, setMessage] = useState("");
+  const [consent, setConsent] = useState(false);
+
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // Hook this up to your form handler / API route of choice.
+    setError(null);
+
+    if (!consent) {
+      setError("Please confirm you agree to be contacted.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/investor-application", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, phone, capacity, development, message, consent }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error ?? "Something went wrong. Please try again.");
+        return;
+      }
+
+      setSuccess(true);
+      setName("");
+      setEmail("");
+      setPhone("");
+      setCapacity("");
+      setDevelopment("");
+      setMessage("");
+      setConsent(false);
+    } catch {
+      setError("Network error — please check your connection and try again.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -47,42 +95,62 @@ export function Investor() {
             <form onSubmit={handleSubmit}>
               <div className="mb-3.5">
                 <Label htmlFor="name">Full Name / Company</Label>
-                <Input id="name" placeholder="Enter your name" required />
+                <Input
+                  id="name"
+                  placeholder="Enter your name"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
               </div>
               <div className="mb-3.5 grid grid-cols-1 gap-3.5 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="you@email.com" required />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="you@email.com"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                 </div>
                 <div>
                   <Label htmlFor="phone">Phone</Label>
-                  <Input id="phone" type="tel" placeholder="+234 800 000 0000" required />
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder="+234 800 000 0000"
+                    required
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                  />
                 </div>
               </div>
               <div className="mb-3.5 grid grid-cols-1 gap-3.5 sm:grid-cols-2">
                 <div>
                   <Label>Investment Capacity</Label>
-                  <Select>
+                  <Select value={capacity} onValueChange={setCapacity}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select range" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="500k-2m">₦500,000 – ₦2,000,000</SelectItem>
-                      <SelectItem value="2m-10m">₦2,000,000 – ₦10,000,000</SelectItem>
-                      <SelectItem value="10m-20m">₦10,000,000 – ₦20,000,000+</SelectItem>
+                      <SelectItem value="₦500,000 – ₦2,000,000">₦500,000 – ₦2,000,000</SelectItem>
+                      <SelectItem value="₦2,000,000 – ₦10,000,000">₦2,000,000 – ₦10,000,000</SelectItem>
+                      <SelectItem value="₦10,000,000 – ₦20,000,000+">₦10,000,000 – ₦20,000,000+</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
                   <Label>Preferred Development</Label>
-                  <Select>
+                  <Select value={development} onValueChange={setDevelopment}>
                     <SelectTrigger>
                       <SelectValue placeholder="No preference" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="none">No preference</SelectItem>
+                      <SelectItem value="No preference">No preference</SelectItem>
                       {developments.map((d) => (
-                        <SelectItem key={d.slug} value={d.slug}>
+                        <SelectItem key={d.slug} value={d.name}>
                           {d.name}
                         </SelectItem>
                       ))}
@@ -92,17 +160,43 @@ export function Investor() {
               </div>
               <div className="mb-4.5">
                 <Label htmlFor="message">Message</Label>
-                <Textarea id="message" placeholder="Tell us about your investment goals" />
+                <Textarea
+                  id="message"
+                  placeholder="Tell us about your investment goals"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                />
               </div>
               <div className="mb-5.5 flex items-start gap-2.5">
-                <input type="checkbox" id="consent" required className="mt-1" />
+                <input
+                  type="checkbox"
+                  id="consent"
+                  checked={consent}
+                  onChange={(e) => setConsent(e.target.checked)}
+                  required
+                  className="mt-1"
+                />
                 <label htmlFor="consent" className="text-[12.5px] leading-relaxed text-ink/55">
                   I agree to be contacted about investment opportunities at Absolute
                   Grace Properties.
                 </label>
               </div>
-              <Button type="submit" className="w-full">
-                Submit Application
+
+              {error && (
+                <p className="mb-4 rounded-sm bg-red-50 px-3.5 py-2.5 text-[13px] text-red-700">
+                  {error}
+                </p>
+              )}
+
+              <Button type="submit" className="w-full" disabled={submitting}>
+                {submitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Submit Application"
+                )}
               </Button>
               <p className="mt-4 text-center text-[13px] text-ink/55">
                 Prefer to talk now?{" "}
@@ -119,8 +213,15 @@ export function Investor() {
           </div>
         </div>
       </div>
+
+      <SuccessDialog
+        open={success}
+        onClose={() => setSuccess(false)}
+        title="Application received"
+        message="Thanks — your investor application has been sent to our team. We typically respond within 24 hours."
+      />
     </section>
-  );
+  )
 }
 
 function InvestorStat({ value, label }: { value: string; label: string }) {
