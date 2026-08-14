@@ -26,12 +26,14 @@ export const metadata: Metadata = {
   title: "Absolute Grace Properties",
   description:
     "Absolute Grace develops and sells surveyed, title-verified land and farmland across trusted locations in Oyo State, Nigeria.",
-   icons: {
+  icons: {
     icon: "/icon.png",
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: LayoutProps<"/">) {
   return (
     <html
       lang="en"

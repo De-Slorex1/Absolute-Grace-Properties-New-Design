@@ -15,33 +15,43 @@ export default function Home() {
   return (
     <>
       <Header />
+
       <main>
         <Hero />
+
         <Reveal>
           <Promise />
         </Reveal>
-        <Reveal>
+
+        <Reveal delay={60}>
           <Developments />
         </Reveal>
-        <Reveal>
+
+        <Reveal delay={60}>
           <LandQuality />
         </Reveal>
-        <Reveal>
+
+        <Reveal delay={60}>
           <Location />
         </Reveal>
-        <Reveal>
+
+        <Reveal delay={60}>
           <WhyInvest />
         </Reveal>
-        <Reveal>
+
+        <Reveal delay={60}>
           <Trust />
         </Reveal>
-        <Reveal>
+
+        <Reveal delay={60}>
           <Investor />
         </Reveal>
-        <Reveal>
+
+        <Reveal delay={60}>
           <Faq />
         </Reveal>
       </main>
+
       <Footer />
     </>
   );
