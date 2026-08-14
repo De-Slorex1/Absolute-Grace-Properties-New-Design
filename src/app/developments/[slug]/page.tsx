@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { MapPin, Ruler, FileText, Calendar, Share2 } from "lucide-react";
+import { MapPin, Ruler, FileText, Calendar, Share2, Download } from "lucide-react";
 import { Header } from "@/components/sections/header";
 import { Footer } from "@/components/sections/footer";
 import { Gallery } from "@/components/development-detail/gallery";
@@ -66,8 +66,8 @@ export default async function DevelopmentDetailPage({
             </div>
 
             <button className="flex items-center gap-2 self-start rounded-sm border border-line px-4 py-2.5 text-[13px] font-medium text-ink/70 transition-colors hover:border-ink hover:text-ink">
-              <Share2 className="h-3.5 w-3.5" />
-              Share
+              <Download className="h-3.5 w-3.5" />
+              Download Brochure
             </button>
           </div>
 

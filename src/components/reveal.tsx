@@ -19,23 +19,40 @@ export function Reveal({
     if (!el) return;
 
     // Respect users who've asked for reduced motion — show immediately.
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
       setVisible(true);
       return;
+    }
+
+    // Safety net: if for any reason the observer never fires
+    // (unsupported browser, edge-case layout, race condition),
+    // never leave content permanently invisible.
+    const fallback = window.setTimeout(() => setVisible(true), 1200);
+
+    if (typeof IntersectionObserver === "undefined") {
+      setVisible(true);
+      return () => window.clearTimeout(fallback);
     }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setVisible(true);
-          observer.disconnect(); // animate once, don't re-trigger on scroll back up
+          observer.disconnect();
+          window.clearTimeout(fallback);
         }
       },
-      { threshold: 0.15, rootMargin: "0px 0px -60px 0px" }
+      { threshold: 0, rootMargin: "0px 0px -10% 0px" }
     );
 
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(fallback);
+    };
   }, []);
 
   return (

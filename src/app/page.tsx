@@ -9,6 +9,7 @@ import { Trust } from "@/components/sections/trust";
 import { Investor } from "@/components/sections/investor";
 import { Faq } from "@/components/sections/faq";
 import { Footer } from "@/components/sections/footer";
+import { Reveal } from "@/components/reveal";
 
 export default function Home() {
   return (
@@ -16,14 +17,30 @@ export default function Home() {
       <Header />
       <main>
         <Hero />
-        <Promise />
-        <Developments />
-        <LandQuality />
-        <Location />
-        <WhyInvest />
-        <Trust />
-        <Investor />
-        <Faq />
+        <Reveal>
+          <Promise />
+        </Reveal>
+        <Reveal>
+          <Developments />
+        </Reveal>
+        <Reveal>
+          <LandQuality />
+        </Reveal>
+        <Reveal>
+          <Location />
+        </Reveal>
+        <Reveal>
+          <WhyInvest />
+        </Reveal>
+        <Reveal>
+          <Trust />
+        </Reveal>
+        <Reveal>
+          <Investor />
+        </Reveal>
+        <Reveal>
+          <Faq />
+        </Reveal>
       </main>
       <Footer />
     </>
