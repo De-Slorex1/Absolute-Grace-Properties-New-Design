@@ -13,6 +13,7 @@ type GalleryItem =
   | {
       type: "video";
       src: string;
+      poster?: string;
       alt: string;
       label: string;
       className?: string;
@@ -22,6 +23,7 @@ const gallery: GalleryItem[] = [
   {
     type: "video",
     src: "/plant.mp4",
+    poster: "/plant.mp4",
     alt: "Video showing the land and site development",
     label: "Farmland Development",
     className: "col-span-2 row-span-2",
@@ -114,6 +116,7 @@ export function LandQuality() {
               {item.type === "video" ? (
                 <video
                   src={item.src}
+                  poster={item.poster}
                   autoPlay
                   muted
                   loop
