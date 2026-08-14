@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
+import { ScrollReset } from "@/components/scroll-reset";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -36,7 +37,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${fraunces.variable} ${inter.variable} ${plexMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-parchment text-ink">{children}</body>
+      <body className="min-h-full flex flex-col bg-parchment text-ink">
+        <ScrollReset />
+        {children}
+      </body>
     </html>
   );
 }

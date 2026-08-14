@@ -12,13 +12,25 @@ export function Reveal({
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false); // has the hidden state been painted at least once?
   const [visible, setVisible] = useState(false);
 
+  // Force at least one real paint frame of the hidden state before
+  // we ever allow "visible" to flip — this is what guarantees the
+  // transition actually animates instead of snapping straight to final.
   useEffect(() => {
+    const raf1 = requestAnimationFrame(() => {
+      const raf2 = requestAnimationFrame(() => setMounted(true));
+      return () => cancelAnimationFrame(raf2);
+    });
+    return () => cancelAnimationFrame(raf1);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     const el = ref.current;
     if (!el) return;
 
-    // Respect users who've asked for reduced motion — show immediately.
     if (
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -27,9 +39,6 @@ export function Reveal({
       return;
     }
 
-    // Safety net: if for any reason the observer never fires
-    // (unsupported browser, edge-case layout, race condition),
-    // never leave content permanently invisible.
     const fallback = window.setTimeout(() => setVisible(true), 1200);
 
     if (typeof IntersectionObserver === "undefined") {
@@ -53,7 +62,7 @@ export function Reveal({
       observer.disconnect();
       window.clearTimeout(fallback);
     };
-  }, []);
+  }, [mounted]);
 
   return (
     <div
