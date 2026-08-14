@@ -20,6 +20,7 @@ export type Development = {
   location: string;
   lga: string;
   name: string;
+  brochure?: string;
   description: string;
   fullDescription: string[];
   plotSize: string;
@@ -154,6 +155,7 @@ export const developments: Development[] = [
       lng: 3.5167
     },
     plotsAvailable: 480,
+    brochure: "/brochures/cashew-haven-farmland.pdf",
     plotsTotal: 600,
     titleStatus: "Registered Survey",
     zoning: "Farmland",

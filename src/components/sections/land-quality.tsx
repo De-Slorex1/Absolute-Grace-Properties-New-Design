@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useRef } from "react";
 
 type GalleryItem =
   | {
@@ -13,7 +14,6 @@ type GalleryItem =
   | {
       type: "video";
       src: string;
-      poster?: string;
       alt: string;
       label: string;
       className?: string;
@@ -21,13 +21,12 @@ type GalleryItem =
 
 const gallery: GalleryItem[] = [
   {
-    type: "video",
-    src: "/plant.mp4",
-    poster: "/plant.mp4",
-    alt: "Video showing the land and site development",
-    label: "Farmland Development",
-    className: "col-span-2 row-span-2",
-  },
+  type: "video",
+  src: "/plant.mp4",
+  alt: "Video showing the land and site development",
+  label: "Farmland Development",
+  className: "col-span-2 row-span-2",
+},
   {
     type: "image",
     src: "/bloom.jpg",
@@ -115,26 +114,28 @@ export function LandQuality() {
               {/* Media */}
               {item.type === "video" ? (
                 <video
-                  src={item.src}
-                  poster={item.poster}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                  aria-label={item.alt}
-                  className="
-                    absolute
-                    inset-0
-                    h-full
-                    w-full
-                    object-cover
-                    transition-transform
-                    duration-700
-                    ease-[cubic-bezier(0.22,1,0.36,1)]
-                    group-hover:scale-[1.07]
-                  "
-                />
+  src={item.src}
+  autoPlay
+  muted
+  loop
+  playsInline
+  preload="auto"
+  controls={false}
+  disablePictureInPicture
+  disableRemotePlayback
+  aria-label={item.alt}
+  className="
+    absolute
+    inset-0
+    h-full
+    w-full
+    object-cover
+    transition-transform
+    duration-700
+    ease-[cubic-bezier(0.22,1,0.36,1)]
+    group-hover:scale-[1.07]
+  "
+/>
               ) : (
                 <Image
                   src={item.src}

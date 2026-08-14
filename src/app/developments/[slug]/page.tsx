@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { MapPin, Ruler, FileText, Calendar, Share2, Download } from "lucide-react";
+import { MapPin, Ruler, FileText, Calendar } from "lucide-react";
 import { Header } from "@/components/sections/header";
 import { Footer } from "@/components/sections/footer";
 import { Gallery } from "@/components/development-detail/gallery";
@@ -8,6 +8,7 @@ import { OtherDevelopments } from "@/components/development-detail/other-develop
 import { Badge } from "@/components/ui/badge";
 import { developments } from "@/lib/data";
 import { GoogleMap } from "@/components/development-detail/google-map";
+import { BrochureButton } from "@/components/development-detail/brochure-button";
 
 export function generateStaticParams() {
   return developments.map((d) => ({ slug: d.slug }));
@@ -65,10 +66,7 @@ export default async function DevelopmentDetailPage({
               </p>
             </div>
 
-            <button className="flex items-center gap-2 self-start rounded-sm border border-line px-4 py-2.5 text-[13px] font-medium text-ink/70 transition-colors hover:border-ink hover:text-ink">
-              <Download className="h-3.5 w-3.5" />
-              Download Brochure
-            </button>
+            <BrochureButton brochure={dev.brochure} />
           </div>
 
           <div className="grid grid-cols-1 gap-6 py-4 sm:grid-cols-4 sm:gap-4 sm:border-b sm:border-line sm:py-6">
