@@ -155,7 +155,7 @@ export const developments: Development[] = [
       lng: 3.5167
     },
     plotsAvailable: 480,
-    brochure: "/brochures/cashew-haven-farmland.pdf",
+    brochure: "/brochures/cashew.pdf",
     plotsTotal: 600,
     titleStatus: "Registered Survey",
     zoning: "Farmland",
