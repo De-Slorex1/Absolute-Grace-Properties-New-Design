@@ -1,6 +1,6 @@
 const credentials = [
   {
-    tag: "CAC / RC 000000",
+    tag: "Registered CAC",
     body: "Absolute Grace Properties Ltd is fully registered with the Corporate Affairs Commission.",
   },
   {
