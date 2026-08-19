@@ -38,7 +38,7 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-sm rounded-sm border border-line bg-white p-8">
         <div className="mb-7 text-center">
           <h1 className="font-serif text-2xl font-semibold">Absolute Grace</h1>
-          <p className="mt-1 font-mono text-xs uppercase tracking-wider text-indigo">
+          <p className="mt-1 font-mono text-xs font-medium uppercase tracking-wider text-indigo">
             Admin Login
           </p>
         </div>
