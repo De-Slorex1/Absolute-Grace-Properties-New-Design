@@ -20,7 +20,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <aside className="hidden w-[220px] shrink-0 border-r border-line bg-white lg:block">
         <div className="border-b border-line p-6">
           <img src='/logo-black.png' alt="logo" />
-          <span className="mt-0.5 block font-mono text-[10px] uppercase tracking-wider text-clay">
+          <span className="mt-0.5 block font-mono text-center text-[10px] uppercase tracking-wider text-indigo">
             Admin
           </span>
         </div>
