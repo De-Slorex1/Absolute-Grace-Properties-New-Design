@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { investorSchema } from "@/lib/validation";
 import { sendAdminNotification } from "@/lib/mailer";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
@@ -16,6 +17,24 @@ export async function POST(req: Request) {
 
   const { name, email, phone, capacity, development, message } = parsed.data;
 
+  const supabase = createAdminClient();
+  const { error: dbError } = await supabase.from("investor_applications").insert({
+    name,
+    email,
+    phone,
+    capacity,
+    development: development || null,
+    message: message || null,
+  });
+
+  if (dbError) {
+    console.error("Investor application DB insert failed:", dbError);
+    return NextResponse.json(
+      { error: "We couldn't save your application right now. Please try WhatsApp instead." },
+      { status: 500 }
+    );
+  }
+
   try {
     await sendAdminNotification({
       subject: `New Investor Application — ${name}`,
@@ -30,11 +49,9 @@ export async function POST(req: Request) {
       `,
     });
   } catch (err) {
-    console.error("Investor application email failed:", err);
-    return NextResponse.json(
-      { error: "We couldn't send your application right now. Please try WhatsApp instead." },
-      { status: 500 }
-    );
+    // The submission is already safely saved in the DB — don't fail the request
+    // just because the notification email had a hiccup.
+    console.error("Investor application email failed (saved to DB regardless):", err);
   }
 
   return NextResponse.json({ success: true });
