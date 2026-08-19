@@ -19,7 +19,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="flex min-h-screen bg-parchment">
       <aside className="hidden w-[220px] shrink-0 border-r border-line bg-white lg:block">
         <div className="border-b border-line p-6">
-          <span className="font-serif text-lg font-semibold">Absolute Grace</span>
+          <img src='/logo-black.png' alt="logo" />
           <span className="mt-0.5 block font-mono text-[10px] uppercase tracking-wider text-clay">
             Admin
           </span>
