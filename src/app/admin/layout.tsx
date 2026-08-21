@@ -20,8 +20,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
         <AdminNav />
 
-        <div className="absolute bottom-0 w-[220px] border-t border-line p-4">
-          <p className="mb-2 truncate text-[12.5px] text-ink/50">{user?.email}</p>
+        <div className="absolute bg-indigo-400 text-white bottom-0 w-[220px] border-t border-line p-4">
+          <p className="mb-2 truncate text-white">{user?.email}</p>
           <SignOutButton />
         </div>
       </aside>
