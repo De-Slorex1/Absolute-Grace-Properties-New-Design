@@ -9,8 +9,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   } = await supabase.auth.getUser();
 
   return (
-    <div className="flex min-h-screen bg-parchment">
-      <aside className="hidden w-[220px] shrink-0 border-r border-line bg-white lg:block">
+    <div className="min-h-screen bg-parchment">
+      <aside className="fixed left-0 top-0 z-40 hidden h-screen w-[220px] flex-col border-r border-line bg-white lg:flex">
         <div className="border-b border-line p-6">
           <img src="/logo-black.png" alt="logo" />
           <span className="mt-0.5 block text-center font-mono text-[10px] font-medium uppercase tracking-wider text-indigo">
@@ -18,15 +18,17 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </span>
         </div>
 
-        <AdminNav />
+        <div className="flex-1 overflow-y-auto">
+          <AdminNav />
+        </div>
 
-        <div className="absolute bg-indigo-400 text-white bottom-0 w-[220px] border-t border-line p-4">
+        <div className="w-full shrink-0 border-t border-line bg-indigo-400 p-4 text-white">
           <p className="mb-2 truncate text-white">{user?.email}</p>
           <SignOutButton />
         </div>
       </aside>
 
-      <main className="flex-1 p-6 lg:p-10">{children}</main>
+      <main className="p-6 lg:ml-[220px] lg:p-10">{children}</main>
     </div>
   );
 }
