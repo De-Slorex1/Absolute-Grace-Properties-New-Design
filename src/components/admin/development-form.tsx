@@ -1,16 +1,19 @@
 "use client";
 
+i"use client";
+
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Loader2, Plus, X, Upload } from "lucide-react";
+import { Loader2, Plus, X, Upload, FileText } from "lucide-react";
 import {
   createDevelopment,
   updateDevelopment,
   uploadDevelopmentImage,
+  uploadDevelopmentBrochure,
   type DevelopmentFormInput,
 } from "@/lib/actions/developments";
 import type { Development, MediaItem } from "@/lib/types";
@@ -61,6 +64,21 @@ export function DevelopmentForm({ existing }: { existing?: Development }) {
     setUploading(false);
     if (result.url) {
       update("image", result.url);
+    } else {
+      setError(result.error ?? "Upload failed.");
+    }
+  }
+
+  async function handleBrochureUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const fd = new FormData();
+    fd.append("file", file);
+    const result = await uploadDevelopmentBrochure(fd);
+    setUploading(false);
+    if (result.url) {
+      update("brochure", result.url);
     } else {
       setError(result.error ?? "Upload failed.");
     }
@@ -224,44 +242,71 @@ export function DevelopmentForm({ existing }: { existing?: Development }) {
             <Input value={form.listedDate} onChange={(e) => update("listedDate", e.target.value)} required />
           </div>
         </div>
-        <div className="mb-4">
+        <div>
           <Label>Title Status (full label)</Label>
           <Input value={form.titleStatus} onChange={(e) => update("titleStatus", e.target.value)} required />
         </div>
-        <div>
-          <Label>Brochure PDF URL (optional)</Label>
-          <Input
-            value={form.brochure ?? ""}
-            onChange={(e) => update("brochure", e.target.value || null)}
-            placeholder="/brochures/example.pdf or a Supabase Storage URL"
-          />
-        </div>
+      </section>
+
+      {/* Coordinates */}
+      <section className="rounded-sm border border-line bg-white p-6">
+        <h2 className="mb-5 font-serif text-lg font-semibold">Coordinates</h2>
         <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label>Latitude</Label>
-          <Input
-            type="number"
-            step="any"
-            value={form.coordinates.lat}
-            onChange={(e) =>
-              update("coordinates", { ...form.coordinates, lat: Number(e.target.value) })
-            }
-            required
-          />
+          <div>
+            <Label>Latitude</Label>
+            <Input
+              type="number"
+              step="any"
+              value={form.coordinates.lat}
+              onChange={(e) => update("coordinates", { ...form.coordinates, lat: Number(e.target.value) })}
+              required
+            />
+          </div>
+          <div>
+            <Label>Longitude</Label>
+            <Input
+              type="number"
+              step="any"
+              value={form.coordinates.lng}
+              onChange={(e) => update("coordinates", { ...form.coordinates, lng: Number(e.target.value) })}
+              required
+            />
+          </div>
         </div>
-        <div>
-          <Label>Longitude</Label>
-          <Input
-            type="number"
-            step="any"
-            value={form.coordinates.lng}
-            onChange={(e) =>
-              update("coordinates", { ...form.coordinates, lng: Number(e.target.value) })
-            }
-            required
-          />
-        </div>
-      </div>
+      </section>
+
+      {/* Brochure */}
+      <section className="rounded-sm border border-line bg-white p-6">
+        <h2 className="mb-5 font-serif text-lg font-semibold">Brochure (PDF)</h2>
+        {form.brochure ? (
+          <div className="mb-4 flex items-center justify-between rounded-sm border border-line bg-parchment-warm px-4 py-3">
+            <a
+              href={form.brochure}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-[13.5px] font-medium text-indigo hover:underline"
+            >
+              <FileText className="h-4 w-4" />
+              View current brochure
+            </a>
+            <button
+              type="button"
+              onClick={() => update("brochure", null)}
+              className="text-ink/40 hover:text-red-600"
+              aria-label="Remove brochure"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        ) : (
+          <p className="mb-4 text-[13px] text-ink/45">No brochure uploaded yet.</p>
+        )}
+
+        <label className="flex w-fit cursor-pointer items-center gap-2 rounded-sm border border-line px-4 py-2.5 text-[13px] font-medium hover:bg-parchment-warm">
+          <Upload className="h-4 w-4" />
+          {uploading ? "Uploading..." : form.brochure ? "Replace Brochure" : "Upload Brochure PDF"}
+          <input type="file" accept="application/pdf" className="hidden" onChange={handleBrochureUpload} />
+        </label>
       </section>
 
       {/* Full description */}

@@ -126,3 +126,31 @@ export async function uploadDevelopmentImage(formData: FormData): Promise<{ url?
   const { data } = admin.storage.from("development-media").getPublicUrl(fileName);
   return { url: data.publicUrl };
 }
+
+export async function uploadDevelopmentBrochure(formData: FormData): Promise<{ url?: string; error?: string }> {
+  await requireAdmin();
+  const admin = createAdminClient();
+
+  const file = formData.get("file") as File | null;
+  if (!file) return { error: "No file provided." };
+
+  if (file.type !== "application/pdf") {
+    return { error: "Please upload a PDF file." };
+  }
+
+  const maxSizeBytes = 15 * 1024 * 1024; // 15MB
+  if (file.size > maxSizeBytes) {
+    return { error: "File is too large — please keep brochures under 15MB." };
+  }
+
+  const fileName = `brochures/${crypto.randomUUID()}.pdf`;
+
+  const { error: uploadError } = await admin.storage
+    .from("development-media")
+    .upload(fileName, file, { cacheControl: "3600", upsert: false, contentType: "application/pdf" });
+
+  if (uploadError) return { error: uploadError.message };
+
+  const { data } = admin.storage.from("development-media").getPublicUrl(fileName);
+  return { url: data.publicUrl };
+}
