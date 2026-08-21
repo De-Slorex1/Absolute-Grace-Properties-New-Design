@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { investorSchema } from "@/lib/validation";
-import { sendAdminNotification } from "@/lib/mailer";
+import { notifyAdminInvestorApplication, sendInvestorApplicationConfirmation } from "@/lib/mailer";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function POST(req: Request) {
@@ -35,24 +35,19 @@ export async function POST(req: Request) {
     );
   }
 
-  try {
-    await sendAdminNotification({
-      subject: `New Investor Application — ${name}`,
-      html: `
-        <h2>New Investor Application</h2>
-        <p><strong>Name / Company:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Phone:</strong> ${phone}</p>
-        <p><strong>Investment Capacity:</strong> ${capacity}</p>
-        <p><strong>Preferred Development:</strong> ${development || "No preference"}</p>
-        <p><strong>Message:</strong><br/>${message ? message.replace(/\n/g, "<br/>") : "—"}</p>
-      `,
-    });
-  } catch (err) {
-    // The submission is already safely saved in the DB — don't fail the request
-    // just because the notification email had a hiccup.
-    console.error("Investor application email failed (saved to DB regardless):", err);
-  }
+  const results = await Promise.allSettled([
+    notifyAdminInvestorApplication({ name, email, phone, capacity, development, message }),
+    sendInvestorApplicationConfirmation({ name, email }),
+  ]);
+
+  results.forEach((result, i) => {
+    if (result.status === "rejected") {
+      console.error(
+        `Investor application email ${i === 0 ? "(admin)" : "(user confirmation)"} failed:`,
+        result.reason
+      );
+    }
+  });
 
   return NextResponse.json({ success: true });
 }
