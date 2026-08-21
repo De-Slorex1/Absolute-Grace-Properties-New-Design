@@ -15,6 +15,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: firstError }, { status: 422 });
   }
 
+  //hello
+
   const { name, email, phone, capacity, development, message } = parsed.data;
 
   const supabase = createAdminClient();
