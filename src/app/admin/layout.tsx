@@ -22,8 +22,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <AdminNav />
         </div>
 
-        <div className="w-full shrink-0 border-t border-line bg-indigo-400 p-4 text-white">
-          <p className="mb-2 truncate text-white">{user?.email}</p>
+        <div className="w-full shrink-0 border-t border-line bg-indigo-400 p-4 text-black">
+          <p className="mb-2 truncate text-black">{user?.email}</p>
           <SignOutButton />
         </div>
       </aside>
