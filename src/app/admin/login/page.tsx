@@ -29,6 +29,9 @@ export default function AdminLoginPage() {
       return;
     }
 
+    // Fire-and-forget: don't block the redirect on this.
+    fetch("/api/admin/notify-login", { method: "POST" }).catch(() => {});
+
     router.push("/admin");
     router.refresh();
   }

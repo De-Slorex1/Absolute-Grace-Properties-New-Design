@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { inquirySchema } from "@/lib/validation";
-import { sendAdminNotification } from "@/lib/mailer";
+import { notifyAdminPropertyInquiry, sendPropertyInquiryConfirmation } from "@/lib/mailer";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function POST(req: Request) {
@@ -35,21 +35,19 @@ export async function POST(req: Request) {
     );
   }
 
-  try {
-    await sendAdminNotification({
-      subject: `New Property Inquiry — ${developmentName ?? "General"}`,
-      html: `
-        <h2>New Property Inquiry</h2>
-        <p><strong>Development:</strong> ${developmentName ?? "—"} ${developmentSlug ? `(${developmentSlug})` : ""}</p>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Phone:</strong> ${phone || "—"}</p>
-        <p><strong>Message:</strong><br/>${message.replace(/\n/g, "<br/>")}</p>
-      `,
-    });
-  } catch (err) {
-    console.error("Property inquiry email failed (saved to DB regardless):", err);
-  }
+  const results = await Promise.allSettled([
+    notifyAdminPropertyInquiry({ name, email, phone, message, developmentName, developmentSlug }),
+    sendPropertyInquiryConfirmation({ name, email, developmentName }),
+  ]);
+
+  results.forEach((result, i) => {
+    if (result.status === "rejected") {
+      console.error(
+        `Property inquiry email ${i === 0 ? "(admin)" : "(user confirmation)"} failed:`,
+        result.reason
+      );
+    }
+  });
 
   return NextResponse.json({ success: true });
 }

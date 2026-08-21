@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { MediaItem } from "@/lib/types";
+import { notifyAdminNewListing } from "@/lib/mailer";
 
 async function requireAdmin() {
   const supabase = await createClient();
@@ -71,11 +72,23 @@ function toRow(input: DevelopmentFormInput) {
 }
 
 export async function createDevelopment(input: DevelopmentFormInput) {
-  await requireAdmin();
+  const user = await requireAdmin();
   const admin = createAdminClient();
 
   const { error } = await admin.from("developments").insert(toRow(input));
   if (error) throw new Error(error.message);
+
+  try {
+    await notifyAdminNewListing({
+      name: input.name,
+      slug: input.slug,
+      createdBy: user.email ?? "unknown",
+      published: input.published,
+    });
+  } catch (err) {
+    console.error("New listing notification email failed:", err);
+    // Don't throw — the listing was already saved successfully.
+  }
 
   revalidatePath("/");
   revalidatePath("/admin/listings");
@@ -154,3 +167,8 @@ export async function uploadDevelopmentBrochure(formData: FormData): Promise<{ u
   const { data } = admin.storage.from("development-media").getPublicUrl(fileName);
   return { url: data.publicUrl };
 }
+
+
+
+
+
