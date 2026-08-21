@@ -7,7 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { WhatsAppIcon } from "@/components/whatsapp-icon";
 import { SuccessDialog } from "@/components/success-dialog";
-import { waLink, type Development } from "@/lib/data";
+import { waLink } from "@/lib/data";
+import type { Development } from "@/lib/types";
 import { X, Clock, ShieldCheck, Loader2 } from "lucide-react";
 
 export function ContactCard({ dev }: { dev: Development }) {

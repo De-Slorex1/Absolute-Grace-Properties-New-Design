@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { LayoutDashboard, Users, MessageSquare, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, MessageSquare, Building2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { SignOutButton } from "@/components/admin/sign-out-button";
 
 const navItems = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { label: "Listings", href: "/admin/listings", icon: Building2 },
   { label: "Investor Leads", href: "/admin/leads", icon: Users },
   { label: "Messages", href: "/admin/messages", icon: MessageSquare },
 ];

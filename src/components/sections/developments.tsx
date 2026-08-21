@@ -1,8 +1,9 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { developments, waLink } from "@/lib/data";
+import { waLink } from "@/lib/data";
+import type { Development } from "@/lib/types";
 
-export function Developments() {
+export function Developments({ developments }: { developments: Development[] }) {
   return (
     <section id="developments" className="bg-parchment-warm py-16 sm:py-20 lg:py-24">
       <div className="mx-auto max-w-[1240px] px-5 sm:px-8">
@@ -11,16 +12,15 @@ export function Developments() {
             Our Developments
           </h2>
           <p className="max-w-[380px] text-[15px] text-ink/55">
-            Three active sites, each surveyed, beaconed, and open for viewing by
-            appointment.
+            Active sites, each surveyed, beaconed, and open for viewing by appointment.
           </p>
         </div>
 
         <div className="space-y-7">
           {developments.map((dev, i) => (
             <article
-              key={dev.slug}
-              className="grid grid-cols-1 items-center border border-line bg-white md:grid-cols-2"
+              key={dev.id}
+              className="grid grid-cols-1 border border-line bg-white md:grid-cols-2"
             >
               <div
                 className={`relative aspect-[16/10] overflow-hidden ${
@@ -29,7 +29,7 @@ export function Developments() {
               >
                 <Image src={dev.image} alt={dev.name} fill className="object-cover" />
                 <span className="absolute left-4.5 top-4.5 bg-white px-3 py-1.5 font-mono text-[11px] tracking-wider">
-                  PLOT {dev.index}
+                  {String(i + 1).padStart(2, "0")} / {String(developments.length).padStart(2, "0")}
                 </span>
               </div>
 
@@ -68,6 +68,12 @@ export function Developments() {
             </article>
           ))}
         </div>
+
+        {developments.length === 0 && (
+          <p className="text-center text-[14px] text-ink/45">
+            No developments published yet — check back soon.
+          </p>
+        )}
       </div>
     </section>
   );

@@ -17,10 +17,16 @@ const nextConfig = {
         protocol: "https",
         hostname: "img.youtube.com",
       },
+      { 
+        protocol: "https", 
+        hostname: "*.supabase.co" 
+      },
     ],
   },
 };
 
 export default nextConfig;
+
+
 
 

@@ -13,10 +13,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SuccessDialog } from "@/components/success-dialog";
-import { developments, waLink } from "@/lib/data";
+import { waLink } from "@/lib/data";
+import type { Development } from "@/lib/types";
 import { Loader2 } from "lucide-react";
 
-export function Investor() {
+export function Investor({ developments }: { developments: Development[] }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");

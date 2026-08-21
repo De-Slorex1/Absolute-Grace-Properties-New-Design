@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { X, ChevronLeft, ChevronRight, Expand, Play } from "lucide-react";
-import type { MediaItem } from "@/lib/data";
+import type { MediaItem } from "@/lib/types";
 
 function youtubeThumb(videoId: string) {
   return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;

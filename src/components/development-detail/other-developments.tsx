@@ -1,8 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { developments as all, type Development } from "@/lib/data";
+import { getPublishedDevelopments } from "@/lib/developments";
+import type { Development } from "@/lib/types";
 
-export function OtherDevelopments({ current }: { current: string }) {
+export async function OtherDevelopments({ current }: { current: string }) {
+  const all = await getPublishedDevelopments();
   const others = all.filter((d) => d.slug !== current);
   if (others.length === 0) return null;
 

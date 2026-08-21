@@ -6,13 +6,13 @@ import { Gallery } from "@/components/development-detail/gallery";
 import { ContactCard } from "@/components/development-detail/contact-card";
 import { OtherDevelopments } from "@/components/development-detail/other-developments";
 import { Badge } from "@/components/ui/badge";
-import { developments } from "@/lib/data";
+import { getPublishedDevelopmentBySlug } from "@/lib/developments";
 import { GoogleMap } from "@/components/development-detail/google-map";
 import { BrochureButton } from "@/components/development-detail/brochure-button";
 
-export function generateStaticParams() {
-  return developments.map((d) => ({ slug: d.slug }));
-}
+// export function generateStaticParams() {
+//   return developments.map((d) => ({ slug: d.slug }));
+// }
 
 export default async function DevelopmentDetailPage({
   params,
@@ -20,10 +20,11 @@ export default async function DevelopmentDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const dev = developments.find((d) => d.slug === slug);
+  const dev = await getPublishedDevelopmentBySlug(slug);
   if (!dev) notFound();
 
   const scarcity = dev.plotsAvailable <= 5;
+  // ...rest of the component stays exactly the same
 
   return (
     <>
@@ -42,15 +43,13 @@ export default async function DevelopmentDetailPage({
             <span>/</span>
             <span className="text-ink/70">{dev.name}</span>
           </nav>
-
           {/* Gallery */}
           <Gallery media={dev.media} alt={dev.name} placeholderNotice={dev.isPlaceholderMedia} />
-
           {/* Title + key info bar */}
           <div className="mt-8 flex flex-col gap-6 border-b border-line pb-8 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <div className="mb-2.5 flex items-center gap-2.5">
-                <Badge>PLOT {dev.index}</Badge>
+                <Badge>PLOT {dev.zoning}</Badge>
                 {scarcity && (
                   <span className="font-mono text-[11px] uppercase tracking-wider text-clay">
                     Only {dev.plotsAvailable} plots left
@@ -65,17 +64,14 @@ export default async function DevelopmentDetailPage({
                 {dev.location}
               </p>
             </div>
-
-            <BrochureButton brochure={dev.brochure} />
+            <BrochureButton brochure={dev.brochure ?? undefined} />
           </div>
-
           <div className="grid grid-cols-1 gap-6 py-4 sm:grid-cols-4 sm:gap-4 sm:border-b sm:border-line sm:py-6">
             <KeyInfo icon={Ruler} label="Plot size" value={`${dev.plotSize} (${dev.priceUnit})`} />
             <KeyInfo icon={FileText} label="Document" value={dev.document} />
             <KeyInfo icon={MapPin} label="Zoning" value={dev.zoning} />
             <KeyInfo icon={Calendar} label="Listed" value={dev.listedDate} />
           </div>
-
           {/* Main two-column layout */}
           <div className="grid grid-cols-1 gap-12 py-10 lg:grid-cols-[1fr_380px] lg:gap-14 lg:py-14">
             <div>
@@ -90,7 +86,6 @@ export default async function DevelopmentDetailPage({
                   ))}
                 </div>
               </section>
-
               {/* Features */}
               <section className="mb-12">
                 <h2 className="mb-5 font-serif text-2xl font-semibold">Key Features</h2>
@@ -103,7 +98,6 @@ export default async function DevelopmentDetailPage({
                   ))}
                 </div>
               </section>
-
               {/* Spec table */}
               <section className="mb-12">
                 <h2 className="mb-5 font-serif text-2xl font-semibold">Property Details</h2>
@@ -116,7 +110,6 @@ export default async function DevelopmentDetailPage({
                   <SpecRow label="Plots available" value={`${dev.plotsAvailable} of ${dev.plotsTotal}`} last />
                 </div>
               </section>
-
               {/* Location */}
               <section>
                 <div className="mb-5 flex items-end justify-between gap-4">
@@ -124,13 +117,11 @@ export default async function DevelopmentDetailPage({
                     <h2 className="font-serif text-2xl font-semibold">
                       Location
                     </h2>
-
                     <p className="mt-1.5 text-[13px] text-ink/50">
                       Find this development on Google Maps
                     </p>
                   </div>
                 </div>
-
                 <GoogleMap
                   name={dev.name}
                   location={dev.location}
@@ -138,7 +129,6 @@ export default async function DevelopmentDetailPage({
                 />
               </section>
             </div>
-
             {/* Sticky contact card */}
             <div>
               <ContactCard dev={dev} />
@@ -146,13 +136,11 @@ export default async function DevelopmentDetailPage({
           </div>
         </div>
       </main>
-
       <OtherDevelopments current={dev.slug} />
       <Footer />
     </>
   );
 }
-
 function KeyInfo({
   icon: Icon,
   label,

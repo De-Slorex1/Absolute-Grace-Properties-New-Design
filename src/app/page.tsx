@@ -1,6 +1,6 @@
 import { Header } from "@/components/sections/header";
 import { Hero } from "@/components/sections/hero";
-import { Promise } from "@/components/sections/promise";
+import { Promise as PromiseSection } from "@/components/sections/promise";
 import { Developments } from "@/components/sections/developments";
 import { LandQuality } from "@/components/sections/land-quality";
 import { Location } from "@/components/sections/location";
@@ -9,24 +9,26 @@ import { Trust } from "@/components/sections/trust";
 import { Investor } from "@/components/sections/investor";
 import { Faq } from "@/components/sections/faq";
 import { Footer } from "@/components/sections/footer";
+import { Reveal } from "@/components/reveal";
+import { getPublishedDevelopments } from "@/lib/developments";
 
-export default function Home() {
+export default async function Home() {
+  const developments = await getPublishedDevelopments();
+
   return (
     <>
       <Header />
-
       <main>
         <Hero />
-        <Promise />
-        <Developments />
-        <LandQuality />
-        <Location />
-        <WhyInvest />
-        <Trust />
-        <Investor />
-        <Faq />
+          <PromiseSection />
+          <Developments developments={developments} />
+          <LandQuality />
+          <Location />
+          <WhyInvest />
+          <Trust />
+          <Investor developments={developments} />
+          <Faq />
       </main>
-
       <Footer />
     </>
   );
